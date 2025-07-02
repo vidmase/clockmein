@@ -52,14 +52,19 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const entries = await getTimeEntries()
+    const { data: entries, error } = await supabase
+      .from('time_entries')
+      .select('*');
+
+    if (error) throw error;
+
     return NextResponse.json(entries, {
       headers: {
         'Content-Type': 'application/json'
       }
-    })
+    });
   } catch (error: any) {
-    console.error('API Error:', error)
+    console.error('API Error:', error);
     return NextResponse.json(
       { 
         error: 'Failed to fetch entries', 
@@ -72,6 +77,6 @@ export async function GET() {
           'Content-Type': 'application/json'
         }
       }
-    )
+    );
   }
-} 
+}
