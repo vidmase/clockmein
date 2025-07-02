@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const result = await Promise.race([resetPromise, timeoutPromise])
       .catch(error => ({ error }));
 
-    if (result && 'error' in result && result.error) {
+    if (typeof result === 'object' && result !== null && 'error' in result && result.error) {
       console.error('Reset password error:', result.error)
       return NextResponse.json(
         { error: "Service temporarily unavailable. Please try again later." },
