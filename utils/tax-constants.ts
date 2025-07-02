@@ -1,0 +1,25 @@
+export const TAX_CONSTANTS = {
+  // Tax Bands (Annual)
+  BASIC_RATE_THRESHOLD: 37700,
+  HIGHER_RATE_THRESHOLD: 125140,
+  
+  // Tax Rates
+  BASIC_RATE: 0.20,
+  HIGHER_RATE: 0.40,
+  ADDITIONAL_RATE: 0.45,
+  
+  // National Insurance (Monthly)
+  NI_PRIMARY_THRESHOLD: 1048,
+  NI_UPPER_EARNINGS_LIMIT: 4189,
+  NI_RATE_BELOW_UEL: 0.12,
+  NI_RATE_ABOVE_UEL: 0.02,
+  
+  // Personal Allowance
+  STANDARD_PERSONAL_ALLOWANCE: 12570,
+  PA_REDUCTION_THRESHOLD: 100000,
+  PA_REDUCTION_RATE: 0.5, // £1 reduction for every £2 over threshold
+  
+  // Default Values
+  DEFAULT_TAX_CODE: '1257L',
+  DEFAULT_PENSION_RATE: 0.05
+}; 

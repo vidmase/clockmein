@@ -1,0 +1,1 @@
+// Remove Client and Project type definitions 

@@ -1,0 +1,45 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+
+export interface Project {
+  id: string
+  name: string
+  description?: string
+  color?: string
+}
+
+/**
+ * Simple client-side hook to load the authenticated user's projects from Supabase.
+ * Extend/replace with your own business logic as needed.
+ */
+export function useProjects() {
+  const supabase = createClientComponentClient()
+  const [projects, setProjects] = useState<Project[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      setIsLoading(true)
+      try {
+        const { data, error } = await supabase
+          .from("projects")
+          .select("id, name, description, color")
+          .order("created_at", { ascending: false })
+
+        if (error) throw error
+        setProjects(data as Project[])
+      } catch (err: any) {
+        setError(err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchProjects()
+  }, [supabase])
+
+  return { projects, isLoading, error }
+}
