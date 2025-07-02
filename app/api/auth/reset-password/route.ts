@@ -28,11 +28,11 @@ export async function POST(req: Request) {
       setTimeout(() => reject(new Error('Request timeout')), SUPABASE_TIMEOUT)
     )
 
-    const { error } = await Promise.race([resetPromise, timeoutPromise])
-      .catch(error => ({ error }))
+    const result = await Promise.race([resetPromise, timeoutPromise])
+      .catch(error => ({ error }));
 
-    if (error) {
-      console.error('Reset password error:', error)
+    if (result && 'error' in result && result.error) {
+      console.error('Reset password error:', result.error)
       return NextResponse.json(
         { error: "Service temporarily unavailable. Please try again later." },
         { status: 503 }

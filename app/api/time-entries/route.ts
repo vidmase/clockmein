@@ -1,5 +1,5 @@
 import { getServerSession } from 'next-auth' // Import server-side auth helper from next-auth
-import { authOptions } from '../auth/[...nextauth]/route' // Correct import path
+import { authOptions } from '@/lib/authOptions'; // Correct import path
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions) // Get authenticated session using server-side auth
