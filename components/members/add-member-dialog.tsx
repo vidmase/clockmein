@@ -27,7 +27,12 @@ import {
 } from "@/components/ui/select"
 import { PlusCircle } from "lucide-react"
 
-export function AddMemberDialog({ form, onSubmit }) {
+interface AddMemberDialogProps {
+  form: any
+  onSubmit: (...args: any[]) => any
+}
+
+export function AddMemberDialog({ form, onSubmit }: AddMemberDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
