@@ -39,27 +39,40 @@ export async function GET(request: Request) {
       setTimeout(() => reject(new Error('Session fetch timeout')), 5000)
     )
     
-    const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise])
-    
-    if (!session?.user) {
-      console.error('No session after verification')
-      return NextResponse.redirect(new URL('/auth/auth-code-error', request.url))
-    }
+    const result = await Promise.race([sessionPromise, timeoutPromise]);
 
-    // Log successful verification with additional security context
-    await supabase.from('auth_logs').insert({
-      event: 'email_verified',
-      user_id: session.user.id,
-      user_agent: request.headers.get('user-agent'),
-      ip: identifier,
-      security_context: {
-        verification_type: type,
-        browser: request.headers.get('sec-ch-ua'),
-        platform: request.headers.get('sec-ch-ua-platform')
+    if (
+      typeof result === 'object' &&
+      result !== null &&
+      'data' in result &&
+      typeof (result as any).data === 'object' &&
+      (result as any).data !== null &&
+      'session' in (result as any).data
+    ) {
+      const session = (result as any).data.session;
+      if (!session?.user) {
+        console.error('No session after verification');
+        return NextResponse.redirect(new URL('/auth/auth-code-error', request.url));
       }
-    })
 
-    return NextResponse.redirect(new URL('/dashboard/time', request.url))
+      // Log successful verification with additional security context
+      await supabase.from('auth_logs').insert({
+        event: 'email_verified',
+        user_id: session.user.id,
+        user_agent: request.headers.get('user-agent'),
+        ip: identifier,
+        security_context: {
+          verification_type: type,
+          browser: request.headers.get('sec-ch-ua'),
+          platform: request.headers.get('sec-ch-ua-platform')
+        }
+      });
+
+      return NextResponse.redirect(new URL('/dashboard/time', request.url));
+    } else {
+      console.error('Session fetch failed or timed out');
+      return NextResponse.redirect(new URL('/auth/auth-code-error', request.url));
+    }
   } catch (error) {
     console.error('Verification process error:', error)
     return NextResponse.redirect(new URL('/auth/auth-code-error', request.url))
