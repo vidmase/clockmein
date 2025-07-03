@@ -66,14 +66,7 @@ import {
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { 
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
+import { Pagination } from "@/components/ui/pagination"
 import { useInvoices } from '@/hooks/use-invoices'
 import { InvoiceDetailsDialog } from '@/components/invoice-details-dialog'
 import { InvoiceEditDialog } from '@/components/invoice-edit-dialog'
@@ -579,32 +572,11 @@ export function Invoices() {
             </TableBody>
           </Table>
           <div className="mt-4">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                  />
-                </PaginationItem>
-                {Array.from({ length: pageCount }, (_, i) => (
-                  <PaginationItem key={i + 1}>
-                    <PaginationLink
-                      onClick={() => setCurrentPage(i + 1)}
-                      isActive={currentPage === i + 1}
-                    >
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => setCurrentPage(p => Math.min(pageCount, p + 1))}
-                    className={currentPage === pageCount ? "pointer-events-none opacity-50" : ""}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+            <Pagination 
+              currentPage={currentPage}
+              totalPages={pageCount}
+              onPageChange={setCurrentPage}
+            />
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">

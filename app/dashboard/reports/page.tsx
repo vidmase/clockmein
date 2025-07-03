@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
+import { DateRange } from "react-day-picker"
 import { 
   BarChart2, 
   PieChart,
@@ -11,7 +12,8 @@ import {
   Filter,
   Users,
   TrendingUp,
-  Loader2
+  Loader2,
+  LucideIcon
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -24,7 +26,7 @@ import { cn } from "@/lib/utils"
 
 export default function ReportsPage() {
   const [activeTab, setActiveTab] = useState("overview")
-  const [dateRange, setDateRange] = useState({ from: null, to: null })
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const { timeEntries, isLoading: entriesLoading } = useTimeEntries()
   const { projects, isLoading: projectsLoading } = useProjects()
 
@@ -52,9 +54,8 @@ export default function ReportsPage() {
         
         <div className="flex items-center gap-4">
           <DateRangePicker 
-            from={dateRange.from} 
-            to={dateRange.to}
-            onSelect={setDateRange}
+            date={dateRange}
+            onDateChange={setDateRange}
           />
           <Button variant="outline" onClick={() => handleExport('pdf')}>
             <Download className="mr-2 h-4 w-4" />

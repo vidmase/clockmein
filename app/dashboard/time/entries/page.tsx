@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { TimeEntryForm } from "@/components/time-entry-form"
 import { useTimeEntries } from "@/hooks/useTimeEntries"
 import { useAuth } from "@/components/auth/auth-provider"
+import { TimeEntry } from "@/types/time-entry"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { format } from 'date-fns'
 import {
@@ -18,19 +19,20 @@ import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from 'lucide-react'
 
 export default function TimeEntriesPage() {
-  const [entries, setEntries] = useState([])
+  const [entries, setEntries] = useState<TimeEntry[]>([])
   const { getTimeEntries } = useTimeEntries()
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    async function loadEntries() {
-      if (user) {
-        const data = await getTimeEntries()
-        setEntries(data)
-        setLoading(false)
-      }
+  const loadEntries = async () => {
+    if (user) {
+      const data = await getTimeEntries()
+      setEntries(data)
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
     loadEntries()
   }, [user, getTimeEntries])
 
@@ -75,13 +77,7 @@ export default function TimeEntriesPage() {
                   <TableCell>{format(new Date(entry.date), 'DD/MM/YYYY')}</TableCell>
                   <TableCell>{entry.description}</TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: entry.project?.color }}
-                      />
-                      {entry.project?.name}
-                    </div>
+                    <span className="text-muted-foreground">-</span>
                   </TableCell>
                   <TableCell>{format(new Date(entry.start_time), 'HH:mm')}</TableCell>
                   <TableCell>{format(new Date(entry.end_time), 'HH:mm')}</TableCell>

@@ -6,7 +6,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { format } from "date-fns"
-import { Invoice } from "@/hooks/use-invoices"
+
+interface Invoice {
+  invoice_number: string
+  date: string
+  client_name: string
+  amount: number
+  status: string
+  description?: string
+  clients?: {
+    email?: string
+    phone?: string
+    address?: string
+    company?: string
+  }
+}
 
 interface InvoiceDetailsDialogProps {
   invoice: Invoice | null

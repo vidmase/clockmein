@@ -16,7 +16,15 @@ export function Wages({ timeEntries }: WagesProps) {
     if (!timeEntries?.length) return null;
     
     const weeklyHours = calculateWeeklyHoursArray(timeEntries);
-    const details = calculateMonthlyPayment(weeklyHours);
+    
+    // Default employee data for calculation - TODO: fetch real employee data
+    const defaultEmployee = {
+      hourly_rate: 12.00,
+      overtime_rate: 18.00,
+      tax_code: '1257L'
+    } as const;
+    
+    const details = calculateMonthlyPayment(weeklyHours, new Date(), defaultEmployee);
     
     return {
       standardHours: details.standardHours.toFixed(1),
