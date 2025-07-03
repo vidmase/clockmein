@@ -115,6 +115,7 @@ export function Members() {
           <MemberCard 
             key={member.id} 
             member={member}
+            stats={{} as any}
             onEdit={() => setSelectedMember(member)}
             // onDelete={() => deleteMember(member.id)} // Removed for build compatibility
           />
