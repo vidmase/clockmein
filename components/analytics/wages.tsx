@@ -6,6 +6,7 @@ import { calculateWeeklyHoursArray } from "@/lib/time-calculations"
 import { TimeEntry } from "@/types/time-entry"
 import { Progress } from "@/components/ui/progress"
 import { useMemo } from "react"
+import { Employee } from "@/services/employee-service"
 
 interface WagesProps {
   timeEntries: TimeEntry[]
@@ -20,7 +21,7 @@ export function Wages({ timeEntries }: WagesProps) {
     const details = calculateMonthlyPayment(
       weeklyHours,
       new Date(),
-      { hourly_rate: 15, overtime_rate: 22.5, tax_code: '1257L' } as any
+      { hourly_rate: 15, overtime_rate: 22.5, tax_code: '1257L' } as Employee
     );
     
     return {
