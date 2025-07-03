@@ -5,5 +5,5 @@ export default function ResetPasswordPage({
 }: {
   params: { token: string }
 }) {
-  return <NewPassword token={token} />
+  return <NewPassword />
 } 

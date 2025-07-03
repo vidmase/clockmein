@@ -22,7 +22,7 @@ export default function LoginPage() {
       <Login />
       {showWelcome && user && (
         <WelcomeDialog 
-          username={user.displayName} 
+          username={user.user_metadata?.full_name || 'User'} 
           onClose={() => setShowWelcome(false)} 
         />
       )}

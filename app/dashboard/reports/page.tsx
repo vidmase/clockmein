@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import type { DateRange } from 'react-day-picker';
 import { motion } from "framer-motion"
 import { 
   BarChart2, 
@@ -13,6 +14,7 @@ import {
   TrendingUp,
   Loader2
 } from "lucide-react"
+import type { LucideIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -24,8 +26,17 @@ import { cn } from "@/lib/utils"
 
 export default function ReportsPage() {
   const [activeTab, setActiveTab] = useState("overview")
-  const [dateRange, setDateRange] = useState({ from: null, to: null })
-  const { timeEntries, isLoading: entriesLoading } = useTimeEntries()
+  const [dateRange, setDateRange] = useState<DateRange>({ from: undefined, to: undefined })
+  const { getTimeEntries, isLoading: entriesLoading } = useTimeEntries()
+  const [timeEntries, setTimeEntries] = useState<import('@/types/time-entry').TimeEntry[]>([])
+
+  useEffect(() => {
+    (async () => {
+      const data = await getTimeEntries();
+      setTimeEntries(data);
+    })();
+  }, [getTimeEntries]);
+
   const { projects, isLoading: projectsLoading } = useProjects()
 
   const handleExport = async (format: 'pdf' | 'csv') => {
@@ -52,9 +63,8 @@ export default function ReportsPage() {
         
         <div className="flex items-center gap-4">
           <DateRangePicker 
-            from={dateRange.from} 
-            to={dateRange.to}
-            onSelect={setDateRange}
+            date={dateRange}
+            onDateChange={(range) => setDateRange(range ?? { from: undefined, to: undefined })}
           />
           <Button variant="outline" onClick={() => handleExport('pdf')}>
             <Download className="mr-2 h-4 w-4" />

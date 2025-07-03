@@ -18,19 +18,20 @@ import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from 'lucide-react'
 
 export default function TimeEntriesPage() {
-  const [entries, setEntries] = useState([])
+  const [entries, setEntries] = useState<import('@/types/time-entry').TimeEntry[]>([])
   const { getTimeEntries } = useTimeEntries()
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    async function loadEntries() {
-      if (user) {
-        const data = await getTimeEntries()
-        setEntries(data)
-        setLoading(false)
-      }
+  const loadEntries = async () => {
+    if (user) {
+      const data = await getTimeEntries()
+      setEntries(data)
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
     loadEntries()
   }, [user, getTimeEntries])
 
@@ -78,9 +79,9 @@ export default function TimeEntriesPage() {
                     <div className="flex items-center gap-2">
                       <div
                         className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: entry.project?.color }}
+                        style={{ backgroundColor: '#e5e7eb' }}
                       />
-                      {entry.project?.name}
+                      {/* Project name not available: TimeEntry has no project property */}
                     </div>
                   </TableCell>
                   <TableCell>{format(new Date(entry.start_time), 'HH:mm')}</TableCell>
