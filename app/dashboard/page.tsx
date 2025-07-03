@@ -46,7 +46,7 @@ const itemVariants = {
 export default function DashboardPage() {
   const { projects, isLoading: projectsLoading, error: projectsError } = useProjects();
   const { getTimeEntries } = useTimeEntries();
-  const [timeEntries, setTimeEntries] = useState([]);
+  const [timeEntries, setTimeEntries] = useState<import('@/types/time-entry').TimeEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [date, setDate] = useState<Date>(new Date());
   const [activeTab, setActiveTab] = useState("overview");
