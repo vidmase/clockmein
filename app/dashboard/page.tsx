@@ -44,17 +44,16 @@ const itemVariants = {
 }
 
 export default function DashboardPage() {
-  const [projects, setProjects] = useState([])
-  const [timeEntries, setTimeEntries] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [date, setDate] = useState<Date>(new Date())
-  const { getProjects } = useProjects()
-  const { getTimeEntries } = useTimeEntries()
-  const [activeTab, setActiveTab] = useState("overview")
+  const { projects, isLoading: projectsLoading, error: projectsError } = useProjects();
+  const { getTimeEntries } = useTimeEntries();
+  const [timeEntries, setTimeEntries] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [date, setDate] = useState<Date>(new Date());
+  const [activeTab, setActiveTab] = useState("overview");
 
-  const todayHours = getTodayHours(timeEntries)
-  const yesterdayHours = getYesterdayHours(timeEntries)
-  const hoursDiff = todayHours - yesterdayHours
+  const todayHours = getTodayHours(timeEntries);
+  const yesterdayHours = getYesterdayHours(timeEntries);
+  const hoursDiff = todayHours - yesterdayHours;
 
   const formatDateTime = (dateTimeString: string) => {
     try {
@@ -78,22 +77,18 @@ export default function DashboardPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [projectsData, entriesData] = await Promise.all([
-          getProjects(),
-          getTimeEntries()
-        ])
-        setProjects(projectsData)
-        setTimeEntries(entriesData)
+        const entriesData = await getTimeEntries();
+        setTimeEntries(entriesData);
       } catch (error) {
-        console.error('Error loading dashboard data:', error)
+        console.error('Error loading dashboard data:', error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
-    loadData()
-  }, [getProjects, getTimeEntries])
+    };
+    loadData();
+  }, [getTimeEntries]);
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading || projectsLoading) return <LoadingSpinner />;
 
   return (
     <motion.div 
