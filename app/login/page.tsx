@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 import { WelcomeDialog } from "@/components/auth/welcome-dialog"
 
 export default function LoginPage() {
-  const { user } = useAuth()
+  const { user, getUserFullName } = useAuth()
   const router = useRouter()
   const [showWelcome, setShowWelcome] = useState(false)
 
@@ -22,7 +22,7 @@ export default function LoginPage() {
       <Login />
       {showWelcome && user && (
         <WelcomeDialog 
-          username={user.user_metadata?.full_name || 'User'} 
+          username={getUserFullName(user)} 
           onClose={() => setShowWelcome(false)} 
         />
       )}

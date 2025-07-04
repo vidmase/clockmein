@@ -6,6 +6,7 @@ import { calculateWeeklyHoursArray } from "@/lib/time-calculations"
 import { TimeEntry } from "@/types/time-entry"
 import { Progress } from "@/components/ui/progress"
 import { useMemo } from "react"
+import { Employee } from "@/services/employee-service"
 
 interface WagesProps {
   timeEntries: TimeEntry[]
@@ -16,12 +17,12 @@ export function Wages({ timeEntries }: WagesProps) {
     if (!timeEntries?.length) return null;
     
     const weeklyHours = calculateWeeklyHoursArray(timeEntries);
-    const dummyEmployee = {
-      hourly_rate: 10,
-      overtime_rate: 15,
-      tax_code: '1250L',
-    };
-    const details = calculateMonthlyPayment(weeklyHours, new Date(), dummyEmployee);
+    
+    const details = calculateMonthlyPayment(
+      weeklyHours,
+      new Date(),
+      { hourly_rate: 15, overtime_rate: 22.5, tax_code: '1257L' } as Employee
+    );
     
     return {
       standardHours: details.standardHours.toFixed(1),

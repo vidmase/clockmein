@@ -42,7 +42,13 @@ const editMemberSchema = z.object({
   working_hours: z.number().min(0).max(24).default(8)
 })
 
-export function EditMemberDialog({ member, onClose, onUpdate }) {
+interface EditMemberDialogProps {
+  member: any
+  onClose: () => void
+  onUpdate: (data: z.infer<typeof editMemberSchema>) => Promise<void>
+}
+
+export function EditMemberDialog({ member, onClose, onUpdate }: EditMemberDialogProps) {
   const form = useForm({
     resolver: zodResolver(editMemberSchema),
     defaultValues: {
@@ -50,7 +56,7 @@ export function EditMemberDialog({ member, onClose, onUpdate }) {
     }
   })
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: z.infer<typeof editMemberSchema>) => {
     try {
       // Update member logic here
       await onUpdate(data)

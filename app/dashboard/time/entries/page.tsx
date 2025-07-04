@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { TimeEntryForm } from "@/components/time-entry-form"
 import { useTimeEntries } from "@/hooks/useTimeEntries"
 import { useAuth } from "@/components/auth/auth-provider"
+import { TimeEntry } from "@/types/time-entry"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { format } from 'date-fns'
 import {
@@ -18,7 +19,7 @@ import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from 'lucide-react'
 
 export default function TimeEntriesPage() {
-  const [entries, setEntries] = useState<import('@/types/time-entry').TimeEntry[]>([])
+  const [entries, setEntries] = useState<TimeEntry[]>([])
   const { getTimeEntries } = useTimeEntries()
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
@@ -76,13 +77,7 @@ export default function TimeEntriesPage() {
                   <TableCell>{format(new Date(entry.date), 'DD/MM/YYYY')}</TableCell>
                   <TableCell>{entry.description}</TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: '#e5e7eb' }}
-                      />
-                      {/* Project name not available: TimeEntry has no project property */}
-                    </div>
+                    <span className="text-muted-foreground">-</span>
                   </TableCell>
                   <TableCell>{format(new Date(entry.start_time), 'HH:mm')}</TableCell>
                   <TableCell>{format(new Date(entry.end_time), 'HH:mm')}</TableCell>

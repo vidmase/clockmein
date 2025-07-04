@@ -1,6 +1,24 @@
 import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer'
-import { Invoice } from '@/hooks/use-invoices'
 import { format } from 'date-fns'
+
+// Temporarily define Invoice interface - TODO: create proper types file
+interface Invoice {
+  id?: string
+  invoice_number: string
+  date: string
+  client_name: string
+  client_id?: string
+  amount: number
+  paid_amount?: number
+  status: "Paid" | "Pending" | "Overdue"
+  description?: string
+  clients?: {
+    email?: string
+    phone?: string
+    address?: string
+    company?: string
+  }
+}
 
 Font.register({
   family: 'Roboto',

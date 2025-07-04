@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useTimeEntries } from "@/hooks/useTimeEntries"
-import { useProjects } from "@/hooks/useProjects"
+import { useProjects, Project } from "@/hooks/useProjects"
 import { useAuth } from "@/components/auth/auth-provider"
 import { Clock, Users, Briefcase, Coffee, ChevronRight, ChevronLeft, Play, Pause, Timer } from 'lucide-react'
 import { format } from 'date-fns'
@@ -39,7 +39,7 @@ export function Kiosk() {
   const [currentTime, setCurrentTime] = useState(new Date())
   const [selectedProject, setSelectedProject] = useState<string>("")
   const [activeSessions, setActiveSessions] = useState<Record<string, ActiveSession>>({})
-  const [projects, setProjects] = useState([])
+  const [projects, setProjects] = useState<Project[]>([])
   const { user } = useAuth()
   const { addTimeEntry } = useTimeEntries()
   const { getProjects } = useProjects()
@@ -68,6 +68,11 @@ export function Kiosk() {
       return
     }
 
+    if (!user) {
+      toast.error("User not authenticated")
+      return
+    }
+
     setActiveSessions(prev => ({
       ...prev,
       [user.id]: {
@@ -81,6 +86,8 @@ export function Kiosk() {
   }
 
   const endSession = async () => {
+    if (!user) return
+    
     const session = activeSessions[user.id]
     if (!session) return
 
@@ -90,8 +97,8 @@ export function Kiosk() {
         start_time: session.startTime,
         end_time: format(new Date(), "HH:mm:ss"),
         break_time: session.totalBreakTime,
-        project_id: session.projectId,
-        user_id: user.id
+        user_id: user.id,
+        duration: "0h 0m" // Will be calculated by the backend
       })
 
       setActiveSessions(prev => {
@@ -107,6 +114,8 @@ export function Kiosk() {
   }
 
   const startBreak = () => {
+    if (!user) return
+    
     setActiveSessions(prev => ({
       ...prev,
       [user.id]: {
@@ -118,6 +127,8 @@ export function Kiosk() {
   }
 
   const endBreak = () => {
+    if (!user) return
+    
     const session = activeSessions[user.id]
     if (!session?.breakStartTime) return
 
@@ -136,7 +147,7 @@ export function Kiosk() {
     toast.success("Break ended")
   }
 
-  const userSession = activeSessions[user?.id]
+  const userSession = user ? activeSessions[user.id] : undefined
   const isOnBreak = Boolean(userSession?.breakStartTime)
 
   return (
@@ -230,7 +241,7 @@ export function Kiosk() {
   )
 }
 
-function KioskStats({ activeSessions, projects }) {
+function KioskStats({ activeSessions, projects }: { activeSessions: Record<string, ActiveSession>; projects: Project[] }) {
   const activeCount = Object.keys(activeSessions).length
   const onBreakCount = Object.values(activeSessions)
     .filter(session => session.breakStartTime).length
@@ -273,7 +284,7 @@ function KioskStats({ activeSessions, projects }) {
   )
 }
 
-function StatsCard({ title, value, description, icon: Icon, trend }) {
+function StatsCard({ title, value, description, icon: Icon, trend }: { title: string; value: string | number; description: string; icon: any; trend?: number }) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

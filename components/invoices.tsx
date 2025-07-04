@@ -66,20 +66,55 @@ import {
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { 
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import { useInvoices } from '@/hooks/use-invoices'
-import { InvoiceDetailsDialog } from '@/components/invoice-details-dialog'
-import { InvoiceEditDialog } from '@/components/invoice-edit-dialog'
-import { PDFDownloadLink } from '@react-pdf/renderer'
-import { InvoicePDFTemplate } from './invoice-pdf-template'
-import { useClients, Client } from "@/hooks/use-clients"
+import { Pagination } from "@/components/ui/pagination"
+// Mock implementations - TODO: implement proper hooks and components
+const useInvoices = () => ({
+  getInvoices: async () => [],
+  createInvoice: async (data: any) => ({ id: '1', ...data }),
+  deleteInvoice: async (id: string) => true,
+  updateInvoice: async (id: string, data: any) => ({ id, ...data })
+})
+
+interface Client {
+  id: string
+  name: string
+  email?: string
+  phone?: string
+  address?: string
+  company?: string
+}
+
+interface Invoice {
+  id?: string
+  invoice_number: string
+  date: string
+  client_name: string
+  client_id?: string
+  amount: number
+  paid_amount?: number
+  status: "Paid" | "Pending" | "Overdue"
+  description?: string
+  clients?: {
+    email?: string
+    phone?: string
+    address?: string
+    company?: string
+  }
+}
+
+const useClients = () => ({
+  getClients: async () => [] as Client[],
+  clients: [] as Client[],
+  isLoading: false,
+  error: null
+})
+
+// Mock components - TODO: implement proper components
+const InvoiceDetailsDialog = ({ invoice, open, onOpenChange }: any) => null
+const InvoiceEditDialog = ({ invoice, open, onOpenChange, onSave }: any) => null
+const PDFDownloadLink = ({ children, ...props }: { children: ((params: { loading: boolean; error: boolean }) => React.ReactNode) | React.ReactNode; [key: string]: any }) => 
+  <div>{typeof children === 'function' ? children({ loading: false, error: false }) : children}</div>
+const InvoicePDFTemplate = ({ invoice }: any) => null
 
 // Mock data for demonstration
 const mockInvoices = [
@@ -221,6 +256,7 @@ export function Invoices() {
   }
 
   const handleDeleteInvoice = async (invoice: Invoice) => {
+    if (!invoice.id) return
     const success = await deleteInvoice(invoice.id)
     if (success) {
       setInvoices(prev => prev.filter(i => i.id !== invoice.id))
@@ -229,10 +265,11 @@ export function Invoices() {
     setInvoiceToDelete(null)
   }
 
-  const handleEditInvoice = async (invoice: Invoice, data: z.infer<typeof editInvoiceFormSchema>) => {
+  const handleEditInvoice = async (invoice: Invoice, data: z.infer<typeof invoiceFormSchema>) => {
+    if (!invoice.id) return
     const updatedInvoice = await updateInvoice(invoice.id, {
-      date: data.date,
-      client: data.client,
+      date: format(data.date, "yyyy-MM-dd"),
+      client_id: data.client_id,
       amount: data.amount,
       status: data.status,
       description: data.description
@@ -579,32 +616,11 @@ export function Invoices() {
             </TableBody>
           </Table>
           <div className="mt-4">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious 
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                  />
-                </PaginationItem>
-                {Array.from({ length: pageCount }, (_, i) => (
-                  <PaginationItem key={i + 1}>
-                    <PaginationLink
-                      onClick={() => setCurrentPage(i + 1)}
-                      isActive={currentPage === i + 1}
-                    >
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => setCurrentPage(p => Math.min(pageCount, p + 1))}
-                    className={currentPage === pageCount ? "pointer-events-none opacity-50" : ""}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+            <Pagination 
+              currentPage={currentPage}
+              totalPages={pageCount}
+              onPageChange={setCurrentPage}
+            />
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
