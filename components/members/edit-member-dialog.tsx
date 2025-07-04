@@ -45,7 +45,7 @@ const editMemberSchema = z.object({
 interface EditMemberDialogProps {
   member: any
   onClose: () => void
-  onUpdate: (data: any) => Promise<void>
+  onUpdate: (data: z.infer<typeof editMemberSchema>) => Promise<void>
 }
 
 export function EditMemberDialog({ member, onClose, onUpdate }: EditMemberDialogProps) {
@@ -56,7 +56,7 @@ export function EditMemberDialog({ member, onClose, onUpdate }: EditMemberDialog
     }
   })
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: z.infer<typeof editMemberSchema>) => {
     try {
       // Update member logic here
       await onUpdate(data)
