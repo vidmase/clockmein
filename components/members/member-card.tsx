@@ -24,7 +24,27 @@ const getStatusColor = (status: string) => ({
   'On Leave': 'bg-yellow-100 text-yellow-800'
 }[status] || 'bg-gray-100 text-gray-800')
 
-export function MemberCard({ member, stats, onEdit }) {
+interface MemberCardProps {
+  member: {
+    avatar?: string;
+    name: string;
+    role: string;
+    status: string;
+    email: string;
+    phone?: string;
+    location?: string;
+    working_hours?: number;
+  };
+  stats: {
+    averageDaily?: number;
+    projectCount?: number;
+    totalHours?: number;
+    lastActive?: Date;
+  };
+  onEdit: () => void;
+}
+
+export function MemberCard({ member, stats, onEdit }: MemberCardProps) {
   const [showStats, setShowStats] = useState(false)
 
   return (
@@ -87,21 +107,21 @@ export function MemberCard({ member, stats, onEdit }) {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Productivity</span>
-                  <span className="text-sm font-medium">{Math.round(stats.averageDaily * 100 / member.working_hours)}%</span>
+                  <span className="text-sm font-medium">{stats.averageDaily && member.working_hours ? Math.round(stats.averageDaily * 100 / member.working_hours) : 0}%</span>
                 </div>
                 <Progress 
-                  value={stats.averageDaily * 100 / member.working_hours} 
+                  value={stats.averageDaily && member.working_hours ? stats.averageDaily * 100 / member.working_hours : 0} 
                   className="h-1.5" 
                 />
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-sm">
                   <Activity className="h-4 w-4 text-muted-foreground" />
-                  <span>{stats.projectCount} Active Projects</span>
+                  <span>{stats.projectCount || 0} Active Projects</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                  <span>{stats.totalHours.toFixed(1)}h Total</span>
+                  <span>{(stats.totalHours || 0).toFixed(1)}h Total</span>
                 </div>
               </div>
             </div>
